@@ -320,6 +320,31 @@ const loop = () =>
             ballSpeed.x *= -1
         if (ball.position.z <= ceiling.position.z + ceilingDepth / 2)
             ballSpeed.z *= -1
+
+        //paddle collisions
+        if(
+            ball.position.z >= paddle.position.z - paddleDepth / 2 &&
+            ball.position.z <= paddle.position.z + paddleDepth / 2 &&
+            ball.position.x >= paddle.position.x - paddleWidth / 2 &&
+            ball.position.x <= paddle.position.x + paddleWidth / 2 &&
+            ball.position.y <= paddle.position.y + paddleHeight / 2
+        )
+            ballSpeed.z *= -1
+        
+        //blocks collisions
+        blocks.forEach((block, index) => {
+            const distance = ball.position.distanceTo(block.position)
+            if (distance < ballRadius + blockSizes.depth / 2)
+            {
+                scene.remove(block)
+                blocks.splice(index, 1)
+                ballSpeed.z *= -1
+                playerScore += 1
+                ballSpeed.multiplyScalar(1.05)
+                if (block.userData.isSpecial)
+                    playerLives += 1
+            }
+        })
     }
 
     // Update controls
