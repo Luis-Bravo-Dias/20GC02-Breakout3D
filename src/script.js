@@ -86,7 +86,6 @@ const blockSizes = {
     quality: 1
 }
 
-// Função para criar blocos
 function createBlocks() {
     const blocks = [];
     const materials = [
@@ -96,47 +95,65 @@ function createBlocks() {
         new THREE.MeshMatcapMaterial({ matcap: blocksTextures.t4 })
     ];
 
+    const lifeMaterial = new THREE.MeshMatcapMaterial({ matcap: lifeTexture });
+
     const widths = [blockSizes.width1, blockSizes.width2, blockSizes.width3];
-    const rows = 16; // Número de fileiras
-    const cols = 20; // Número de blocos por fileira
-    const startX = -200; // Ponto inicial no eixo X centrado com o paddle
-    const startY = 50 // Ponto inicial no eixo Y
-    const startZ = -100; // Ponto inicial no eixo Z
-    const zSpacing = 0.5 // Espaçamento entre os blocos no eixo Z
+    const rows = 16; // Number of rows
+    const cols = 20; // Number of blocks per row
+    const startX = -200; // Starting point on the X-axis
+    const startY = 50; // Starting point on the Y-axis
+    const startZ = -100; // Starting point on the Z-axis
+    const zSpacing = 0.5; // Spacing between blocks on the Z-axis
+
+    // Randomly choose two special blocks
+    const specialBlocks = new Set();
+    while (specialBlocks.size < 2) {
+        const randomRow = Math.floor(Math.random() * (rows - 3)) + 3; // Exclude first 3 rows
+        const randomCol = Math.floor(Math.random() * cols);
+        specialBlocks.add(`${randomRow}-${randomCol}`);
+    }
 
     let currentX = startX;
     let currentZ = startZ;
 
     for (let row = 0; row < rows; row++) {
-        currentX = startX; // Reinicia a posição X no início de cada fileira
+        currentX = startX; // Reset X position at the start of each row
         for (let col = 0; col < cols; col++) {
-            // Escolha aleatória de largura e material
+            // Determine if this block is special
+            const isSpecial = specialBlocks.has(`${row}-${col}`);
+
             const blockWidth = widths[Math.floor(Math.random() * widths.length)];
-            const material = materials[Math.floor(Math.random() * materials.length)];
+            const material = isSpecial ? lifeMaterial : materials[Math.floor(Math.random() * materials.length)];
 
             const block = new THREE.Mesh(
                 new THREE.BoxGeometry(blockWidth, blockSizes.height, blockSizes.depth),
                 material
             );
 
-            // Posicionar o bloco
+            // Position the block
             block.position.set(
-                currentX + blockWidth / 2, // Ajusta para alinhar blocos
-                startY, // Mantém a mesma altura para todos os blocos
-                currentZ // Incrementa para criar uma linha no eixo Z
+                currentX + blockWidth / 2, // Adjust to align blocks
+                startY, // Keep the same height for all blocks
+                currentZ // Increment to create a row on the Z-axis
             );
 
-            currentX += blockWidth; // Avança no eixo X para o próximo bloco
-            currentZ -= zSpacing; // Avança no eixo Z para o próximo bloco
+            currentX += blockWidth; // Move forward on the X-axis for the next block
+            currentZ -= zSpacing; // Move forward on the Z-axis for the next block
 
-            // Adiciona o bloco à cena e ao array
+            // Add the block to the scene and the array
             scene.add(block);
             blocks.push(block);
+
+            // Add special block behavior (extra life)
+            if (isSpecial) {
+                block.userData.isSpecial = true;
+            }
         }
     }
 
     return blocks;
 }
+
 
 
 // Criar os blocos
@@ -151,7 +168,7 @@ const paddleWidth = 60,
 
 const paddleMaterial = new THREE.MeshMatcapMaterial({
     matcap: playerTexture
-});
+})
 
 const paddle = new THREE.Mesh(
     new THREE.BoxGeometry(
@@ -163,7 +180,7 @@ const paddle = new THREE.Mesh(
         paddleQuality
     ),
     paddleMaterial
-);
+)
 
 // Position the paddle
 paddle.position.set(0, 50, 200);
@@ -180,6 +197,79 @@ camera.position.set(
 //camera.updateProjectionMatrix()
 
 scene.add(paddle);
+
+//walls
+const wallWidth = 5,
+    wallHeight = 150,
+    wallDepth = 500,
+    wallQuality = 1;
+
+const wallMaterial = new THREE.MeshMatcapMaterial({
+    matcap: ballTexture
+});
+
+const righWall = new THREE.Mesh(
+    new THREE.BoxGeometry(
+        wallWidth,
+        wallHeight,
+        wallDepth,
+        wallQuality,
+        wallQuality,
+        wallQuality
+    ),
+    wallMaterial
+)
+
+righWall.position.x = paddle.position.x + 250
+righWall.position.y = paddle.position.y
+righWall.position.z = paddle.position.z - 250
+
+scene.add(righWall)
+
+const leftWall = new THREE.Mesh(
+    new THREE.BoxGeometry(
+        wallWidth,
+        wallHeight,
+        wallDepth,
+        wallQuality,
+        wallQuality,
+        wallQuality
+    ),
+    wallMaterial
+)
+
+leftWall.position.x = paddle.position.x - 250
+leftWall.position.y = paddle.position.y
+leftWall.position.z = paddle.position.z - 250
+
+scene.add(leftWall)
+
+const ceilingWidth = 500,
+    ceilingHeight = wallHeight,
+    ceilingDepth = 10,
+    ceilingQuality = 1;
+
+const ceilingMaterial = new THREE.MeshMatcapMaterial({
+    matcap: ballTexture
+})
+
+const ceiling = new THREE.Mesh(
+    new THREE.BoxGeometry(
+        ceilingWidth,
+        ceilingHeight,
+        ceilingDepth,
+        ceilingQuality,
+        ceilingQuality,
+        ceilingQuality
+    ),
+    ceilingMaterial
+)
+
+ceiling.position.x = paddle.position.x
+ceiling.position.y = paddle.position.y
+ceiling.position.z = paddle.position.z - 500
+
+scene.add(ceiling)
 
 
 // Controls
