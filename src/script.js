@@ -77,6 +77,33 @@ const camera = new THREE.PerspectiveCamera(
 )
 scene.add(camera)
 
+//paddle
+const paddleWidth = 60,
+    paddleHeight = 20,
+    paddleDepth = 10,
+    paddleQuality = 1;
+
+const paddleMaterial = new THREE.MeshMatcapMaterial({
+    matcap: playerTexture
+})
+
+const paddle = new THREE.Mesh(
+    new THREE.BoxGeometry(
+        paddleWidth,
+        paddleHeight,
+        paddleDepth,
+        paddleQuality,
+        paddleQuality,
+        paddleQuality
+    ),
+    paddleMaterial
+)
+
+// Position the paddle
+paddle.position.set(0, 50, 200)
+scene.add(paddle)
+
+//Blocks
 const blockSizes = {
     width1: 20,
     width2: 20,
@@ -101,7 +128,7 @@ function createBlocks() {
     const rows = 16; // Number of rows
     const cols = 20; // Number of blocks per row
     const startX = -200; // Starting point on the X-axis
-    const startY = 50; // Starting point on the Y-axis
+    const startY = paddle.position.y; // Starting point on the Y-axis
     const startZ = -100; // Starting point on the Z-axis
     const zSpacing = 0.5; // Spacing between blocks on the Z-axis
 
@@ -154,49 +181,19 @@ function createBlocks() {
     return blocks;
 }
 
-
-
-// Criar os blocos
 const blocks = createBlocks();
-
-
-//paddle
-const paddleWidth = 60,
-    paddleHeight = 20,
-    paddleDepth = 10,
-    paddleQuality = 1;
-
-const paddleMaterial = new THREE.MeshMatcapMaterial({
-    matcap: playerTexture
-})
-
-const paddle = new THREE.Mesh(
-    new THREE.BoxGeometry(
-        paddleWidth,
-        paddleHeight,
-        paddleDepth,
-        paddleQuality,
-        paddleQuality,
-        paddleQuality
-    ),
-    paddleMaterial
-)
-
-// Position the paddle
-paddle.position.set(0, 50, 200);
 
 // Set initial camera position and orientation
 camera.position.set(
     paddle.position.x,
     paddle.position.y + 50,
     paddle.position.z + 150
-);
+)
 //camera.lookAt(paddle.position);
 
 //camera.fov = 60
 //camera.updateProjectionMatrix()
 
-scene.add(paddle);
 
 //walls
 const wallWidth = 5,
@@ -249,10 +246,6 @@ const ceilingWidth = 500,
     ceilingDepth = 10,
     ceilingQuality = 1;
 
-const ceilingMaterial = new THREE.MeshMatcapMaterial({
-    matcap: ballTexture
-})
-
 const ceiling = new THREE.Mesh(
     new THREE.BoxGeometry(
         ceilingWidth,
@@ -262,7 +255,7 @@ const ceiling = new THREE.Mesh(
         ceilingQuality,
         ceilingQuality
     ),
-    ceilingMaterial
+    wallMaterial
 )
 
 ceiling.position.x = paddle.position.x
@@ -270,6 +263,20 @@ ceiling.position.y = paddle.position.y
 ceiling.position.z = paddle.position.z - 500
 
 scene.add(ceiling)
+
+//
+const ballRadius = 10
+const ballMaterial = new THREE.MeshMatcapMaterial({
+    matcap: ballTexture
+})
+
+const ball = new THREE.Mesh(
+    new THREE.SphereGeometry(ballRadius, 32, 32),
+    ballMaterial
+)
+
+ball.position.set(0, paddle.position.y, paddle.position.z -50)
+scene.add(ball)
 
 
 // Controls
