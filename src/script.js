@@ -13,6 +13,12 @@ const gui = new GUI()
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
 
+//variables
+let playerLives = 3
+let playerScore = 0
+let ballSpeed = new THREE.Vector3(1, 0, -5)
+let gameActive = true
+
 // Scene
 const scene = new THREE.Scene()
 
@@ -40,6 +46,9 @@ blocksTextures.t4.colorSpace = THREE.SRGBColorSpace
 
 const lifeTexture = textureLoader.load('textures/matcaps/life.png')
 lifeTexture.colorSpace = THREE.SRGBColorSpace
+
+const wallTexture = textureLoader.load('textures/matcaps/wall.png')
+wallTexture.colorSpace = THREE.SRGBColorSpace
 
 
 /**
@@ -202,7 +211,7 @@ const wallWidth = 5,
     wallQuality = 1;
 
 const wallMaterial = new THREE.MeshMatcapMaterial({
-    matcap: ballTexture
+    matcap: wallTexture
 });
 
 const righWall = new THREE.Mesh(
@@ -299,7 +308,19 @@ const clock = new THREE.Clock()
 
 const loop = () =>
 {
-    const elapsedTime = clock.getElapsedTime()
+    if (gameActive)
+    {
+        const elapsedTime = clock.getElapsedTime()
+
+        //ball movements
+        ball.position.add(ballSpeed)
+
+        //walls and ceiling collisions
+        if (ball.position.x <= leftWall.position.x + wallWidth /2 || ball.position.x >= righWall.position.x - wallWidth / 2)
+            ballSpeed.x *= -1
+        if (ball.position.z <= ceiling.position.z + ceilingDepth / 2)
+            ballSpeed.z *= -1
+    }
 
     // Update controls
     //controls.update()
