@@ -200,8 +200,8 @@ camera.position.set(
 )
 //camera.lookAt(paddle.position);
 
-//camera.fov = 60
-//camera.updateProjectionMatrix()
+camera.fov = 60
+camera.updateProjectionMatrix()
 
 
 //walls
@@ -313,11 +313,26 @@ function resetBall()
  */
 const clock = new THREE.Clock()
 
+//move paddle
+//let targetPaddleX = paddle.position.x
+
+document.addEventListener('keydown', (event) =>
+{
+    const moveDist = 20
+    if (event.key === 'a' && paddle.position.x > leftWall.position.x + paddleWidth / 2)
+        paddle.position.x -= moveDist
+    else if (event.key === 'd' && paddle.position.x < righWall.position.x - paddleWidth / 2)
+        paddle.position.x += moveDist
+})
+
 const loop = () =>
 {
     if (gameActive)
     {
         const elapsedTime = clock.getElapsedTime()
+
+        //smooth move
+        //paddle.position.x = THREE.MathUtils.lerp(paddle.position.x, targetPaddleX, 0.5)
 
         //ball movements
         ball.position.add(ballSpeed)
@@ -347,29 +362,32 @@ const loop = () =>
                 blocks.splice(index, 1)
                 ballSpeed.z *= -1
                 playerScore += 1
-                ballSpeed.multiplyScalar(1.05)
+                //ballSpeed.multiplyScalar(1.05)
                 if (block.userData.isSpecial)
                     playerLives += 1
             }
         })
 
-        //console.log("Ball Y Position:", ball.position.z);
+        console.log("Ball Z Position:", ball.position.z);
 
         //ball out
-        if (ball.position.z >= paddle.position.z - paddleDepth + 5)
+        if (ball.position.z >= paddle.position.z + (paddleDepth * 2))
         {
             console.log("Ball went out of bounds!")
             playerLives -= 1
             if (playerLives <= 0)
             {
                 resetBall()
-                gameActive = false
-                alert("Game Over! Points: " + playerScore)
+                //gameActive = false
+                //alert("Game Over! Points: " + playerScore)
             }
             else
                 resetBall()
         }
     }
+
+    if (blocks.length === 0)
+        blocks.push(...createBlocks())
 
     // Update controls
     //controls.update()
