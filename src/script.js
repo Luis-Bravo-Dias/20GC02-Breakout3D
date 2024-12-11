@@ -301,6 +301,13 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
+//reset ball
+function resetBall()
+{
+    ball.position.set(0, paddle.position.y, paddle.position.z - 50)
+    ballSpeed.set(1, 0, -5)
+}
+
 /**
  * Animate
  */
@@ -345,6 +352,23 @@ const loop = () =>
                     playerLives += 1
             }
         })
+
+        //console.log("Ball Y Position:", ball.position.z);
+
+        //ball out
+        if (ball.position.z >= paddle.position.z - paddleDepth + 5)
+        {
+            console.log("Ball went out of bounds!")
+            playerLives -= 1
+            if (playerLives <= 0)
+            {
+                resetBall()
+                gameActive = false
+                alert("Game Over! Points: " + playerScore)
+            }
+            else
+                resetBall()
+        }
     }
 
     // Update controls
