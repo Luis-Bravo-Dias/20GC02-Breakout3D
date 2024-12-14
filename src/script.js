@@ -18,6 +18,7 @@ let playerLives = 3
 let playerScore = 0
 let ballSpeed = new THREE.Vector3(1, 0, -5)
 let gameActive = true
+let maxSpeed = 10
 
 // Scene
 const scene = new THREE.Scene()
@@ -196,7 +197,7 @@ const blocks = createBlocks();
 camera.position.set(
     paddle.position.x,
     paddle.position.y + 50,
-    paddle.position.z + 150
+    paddle.position.z + 200
 )
 //camera.lookAt(paddle.position);
 
@@ -289,8 +290,8 @@ scene.add(ball)
 
 
 // Controls
-const controls = new OrbitControls(camera, canvas)
-controls.enableDamping = true
+//const controls = new OrbitControls(camera, canvas)
+//controls.enableDamping = true
 
 /**
  * Renderer
@@ -316,13 +317,29 @@ const clock = new THREE.Clock()
 //move paddle
 //let targetPaddleX = paddle.position.x
 
-document.addEventListener('keydown', (event) =>
+/*document.addEventListener('keydown', (event) =>
 {
     const moveDist = 20
     if (event.key === 'a' && paddle.position.x > leftWall.position.x + paddleWidth / 2)
         paddle.position.x -= moveDist
     else if (event.key === 'd' && paddle.position.x < righWall.position.x - paddleWidth / 2)
         paddle.position.x += moveDist
+})*/
+
+document.addEventListener('mousemove', (event) =>
+{
+    //mouse position in canvas
+    const canvasBounds = canvas.getBoundingClientRect()
+    const mouseX = ((event.clientX - canvasBounds.left) / canvasBounds.width * 2 - 1) //normalize between -1 and 1
+
+    //covert coordenates
+    const worldX = mouseX * (righWall.position.x - paddleWidth / 2)
+
+    //restrict paddle
+    const clampedX = THREE.MathUtils.clamp(worldX, leftWall.position.x + paddleWidth / 2, righWall.position.x - paddleWidth / 2)
+
+    //paddle position
+    paddle.position.x = clampedX
 })
 
 const loop = () =>
@@ -362,7 +379,14 @@ const loop = () =>
                 blocks.splice(index, 1)
                 ballSpeed.z *= -1
                 playerScore += 1
-                //ballSpeed.multiplyScalar(1.05)
+
+                //ball speed
+                ballSpeed.multiplyScalar(1.01)
+                const speed = ballSpeed.length()
+                if (speed > maxSpeed)
+                    ballSpeed.setLength(maxSpeed)
+                
+                //extra life
                 if (block.userData.isSpecial)
                     playerLives += 1
             }
@@ -378,8 +402,8 @@ const loop = () =>
             if (playerLives <= 0)
             {
                 resetBall()
-                //gameActive = false
-                //alert("Game Over! Points: " + playerScore)
+                gameActive = false
+                alert("Game Over! Points: " + playerScore)
             }
             else
                 resetBall()
