@@ -7,13 +7,63 @@
 html,
 body
 {
+    width: 100%;
+    height: 100%;
+    background-color: darkblue;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#container {
+    position: relative;
+    width: 80%;
+    max-width: 800px;
+    background-color: #000;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#game-title {
+    color: orange;
+    text-align: center;
+    font-size: 2rem;
+    font-family: Arial, sans-serif;
+    margin-bottom: 10px;
+}
+
+#ui {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-family: Arial, sans-serif;
+}
+
+#lives img {
+    width: 30px;
+    height: 30px;
+    margin-right: 5px;
+}
+
+#score {
+    color: white;
+    background-color: black;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 1.2rem;
 }
 
 .webgl
 {
-    position: fixed;
-    top: 0;
-    left: 0;
-    outline: none;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    border: 2px solid #fff;
 }

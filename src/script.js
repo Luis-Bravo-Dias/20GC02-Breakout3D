@@ -19,6 +19,11 @@ let playerScore = 0
 let ballSpeed = new THREE.Vector3(1, 0, -5)
 let gameActive = true
 let maxSpeed = 10
+const livesContainer = document.getElementById('lives')
+const scoreContainer = document.getElementById('score')
+
+//sprites
+const lifeSprite = 'textures/sprites/life.png'
 
 // Scene
 const scene = new THREE.Scene()
@@ -56,11 +61,11 @@ wallTexture.colorSpace = THREE.SRGBColorSpace
  * Sizes
  */
 const sizes = {
-    width: window.innerWidth,
-    height: window.innerHeight
+    width: 500,
+    height: 250
 }
 
-window.addEventListener('resize', () =>
+/*window.addEventListener('resize', () =>
 {
     // Update sizes
     sizes.width = window.innerWidth
@@ -73,7 +78,7 @@ window.addEventListener('resize', () =>
     // Update renderer
     renderer.setSize(sizes.width, sizes.height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-})
+})*/
 
 /**
  * Camera
@@ -309,6 +314,26 @@ function resetBall()
     ballSpeed.set(1, 0, -5)
 }
 
+//update containers
+function updateLives()
+{
+    livesContainer.innerHTML = '' //clean sprites
+    for (let i = 0; i < playerLives; i++)
+    {
+        const life = document.createElement('img')
+        life.src = lifeSprite
+        livesContainer.appendChild(life)
+    }
+}
+
+function updateScore()
+{
+    scoreContainer.textContent = `Score: ${playerScore}`
+}
+
+updateLives()
+updateScore()
+
 /**
  * Animate
  */
@@ -388,17 +413,17 @@ const loop = () =>
                 
                 //extra life
                 if (block.userData.isSpecial)
+                {
                     playerLives += 1
+                    updateLives()
+                }
+                updateScore()
             }
         })
-
-        console.log("Ball Z Position:", ball.position.z);
 
         //ball out
         if (ball.position.z >= paddle.position.z + (paddleDepth * 2))
         {
-            console.log("Ball went out of bounds!")
-            playerLives -= 1
             if (playerLives <= 0)
             {
                 resetBall()
@@ -406,7 +431,11 @@ const loop = () =>
                 alert("Game Over! Points: " + playerScore)
             }
             else
+            {
+                playerLives -= 1
+                updateLives()
                 resetBall()
+            }
         }
     }
 
