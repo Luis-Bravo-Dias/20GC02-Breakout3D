@@ -8,7 +8,7 @@ import GUI from 'lil-gui'
  * Base
  */
 // Debug
-const gui = new GUI()
+//const gui = new GUI()
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -17,10 +17,53 @@ const canvas = document.querySelector('canvas.webgl')
 let playerLives = 3
 let playerScore = 0
 let ballSpeed = new THREE.Vector3(1, 0, -5)
-let gameActive = true
+let gameActive = false
 let maxSpeed = 10
 const livesContainer = document.getElementById('lives')
 const scoreContainer = document.getElementById('score')
+
+//menus
+const startMenu = document.getElementById('start-menu')
+const gameOverMenu = document.getElementById('game-over-menu')
+const startButton = document.getElementById('start-button')
+const restartButton = document.getElementById('restart-button')
+const finalScore = document.getElementById('final-score')
+
+function startGame()
+{
+    startMenu.classList.add('hidden')
+    gameActive = true
+    resetGame();
+}
+
+function resetGame()
+{
+    playerScore = 0
+    playerLives = 3
+    updateScore()
+    updateLives()
+    resetBall()
+
+    blocks.forEach(block => scene.remove(block));
+    blocks.splice(0, blocks.length)
+    blocks.push(...createBlocks())
+}
+
+function restartGame()
+{
+    gameOverMenu.classList.add('hidden')
+    startGame()
+}
+
+function gameOver()
+{
+    gameActive = false
+    finalScore.textContent = `Final Score: ${playerScore}`
+    gameOverMenu.classList.remove('hidden')
+}
+
+startButton.addEventListener('click', startGame)
+restartButton.addEventListener('click', restartGame)
 
 //sprites
 const lifeSprite = 'textures/sprites/life.png'
@@ -373,6 +416,8 @@ const loop = () =>
     {
         const elapsedTime = clock.getElapsedTime()
 
+        console.log(`Blocos restantes: ${blocks.length}`)
+
         //smooth move
         //paddle.position.x = THREE.MathUtils.lerp(paddle.position.x, targetPaddleX, 0.5)
 
@@ -427,8 +472,7 @@ const loop = () =>
             if (playerLives <= 0)
             {
                 resetBall()
-                gameActive = false
-                alert("Game Over! Points: " + playerScore)
+                gameOver()
             }
             else
             {
