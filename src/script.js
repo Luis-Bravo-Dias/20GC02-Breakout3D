@@ -416,8 +416,6 @@ const loop = () =>
     {
         const elapsedTime = clock.getElapsedTime()
 
-        console.log(`Blocos restantes: ${blocks.length}`)
-
         //smooth move
         //paddle.position.x = THREE.MathUtils.lerp(paddle.position.x, targetPaddleX, 0.5)
 
