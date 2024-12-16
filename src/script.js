@@ -16,7 +16,7 @@ const canvas = document.querySelector('canvas.webgl')
 //variables
 let playerLives = 3
 let playerScore = 0
-let ballSpeed = new THREE.Vector3(1, 0, -5)
+let ballSpeed = new THREE.Vector3(1, 0, -0.5)
 let gameActive = false
 let maxSpeed = 10
 const livesContainer = document.getElementById('lives')
@@ -244,12 +244,16 @@ const blocks = createBlocks();
 // Set initial camera position and orientation
 camera.position.set(
     paddle.position.x,
-    paddle.position.y + 50,
-    paddle.position.z + 200
+    paddle.position.y + 300,
+    paddle.position.z + 300
 )
-//camera.lookAt(paddle.position);
+camera.lookAt(
+    paddle.position.x,
+    paddle.position.y, // Inclina o foco para um ponto mais abaixo
+    paddle.position.z - 200
+);
 
-camera.fov = 60
+camera.fov = 35
 camera.updateProjectionMatrix()
 
 
